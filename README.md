@@ -1,17 +1,39 @@
 # bottom-up-attention
 
+Updated to run on docker with CUDA 10.1, cuDNN7 and Ubuntu 16.04
+
+``` bash    
+    docker build -f Dockerfile -t bottomUp .
+
+    docker run --runtime=nvidia -v /home/nikolai/Documents/art_data/gg:/workspace/images:ro -v /home/nikolai/Documents/data:/workspace/features --detach-keys 'ctrl-k' -it bottomUp bash
+```
+
+
+* [Important Link](https://github.com/BVLC/caffe/wiki/Ubuntu-16.04-or-15.10-Installation-Guide)
+* [cudnn File Switch](https://github.com/BVLC/caffe/issues/5793)
+* [Leave opencv3 out](https://github.com/BVLC/caffe/issues/4942)
+* [Leav opencv3 out](https://github.com/BVLC/caffe/issues/1276)
+* [With Py3](https://mc.ai/installing-caffe-on-ubuntu-18-04-with-cuda-and-cudnn/)
+* [List of CUDA Arch](https://arnon.dk/matching-sm-architectures-arch-and-gencode-for-various-nvidia-cards/)
+* [Docker Hub Airsplay](https://hub.docker.com/r/airsplay/bottom-up-attention)
+* [Gist for py-faster-rcnn CUDA9 Ubuntu 17](https://gist.github.com/acmiyaguchi/bc535ba23eabd3564edd73e491763d50)
+* [Dockerfile CUDA8](https://gist.github.com/cewee/356b941a4006a502a67f68213f1a76b5)
+* [Arch Discussion](https://github.com/rbgirshick/py-faster-rcnn/issues/2)
+* [Where to look for Numpy Paths](https://github.com/BVLC/caffe/issues/4537)
+
+
 This code implements a bottom-up attention model, based on multi-gpu training of Faster R-CNN with ResNet-101, using object and attribute annotations from [Visual Genome](http://visualgenome.org/).
 
 The pretrained model generates output features corresponding to salient image regions. These bottom-up attention features can typically be used as a drop-in replacement for CNN features in attention-based image captioning and visual question answering (VQA) models. This approach was used to achieve state-of-the-art image captioning performance on [MSCOCO](https://competitions.codalab.org/competitions/3221#results) (**CIDEr 117.9**, **BLEU_4 36.9**) and to win the [2017 VQA Challenge](http://www.visualqa.org/workshop.html) (**70.3%** overall accuracy), as described in:
-- [Bottom-Up and Top-Down Attention for Image Captioning and Visual Question Answering](https://arxiv.org/abs/1707.07998), and 
-- [Tips and Tricks for Visual Question Answering: Learnings from the 2017 Challenge](https://arxiv.org/abs/1708.02711). 
+- [Bottom-Up and Top-Down Attention for Image Captioning and Visual Question Answering](https://arxiv.org/abs/1707.07998), and
+- [Tips and Tricks for Visual Question Answering: Learnings from the 2017 Challenge](https://arxiv.org/abs/1708.02711).
 
 Some example object and attribute predictions for salient image regions are illustrated below.
 
 ![teaser-bike](data/demo/rcnn_example.png?raw=true)
 ![teaser-oven](data/demo/rcnn_example_2.png?raw=true)
 
-Note: This repo only includes code for training the bottom-up attention / Faster R-CNN model (section 3.1 of the [paper](https://arxiv.org/abs/1707.07998)). The actual captioning model (section 3.2) is available in a separate repo [here](https://github.com/peteanderson80/Up-Down-Captioner). 
+Note: This repo only includes code for training the bottom-up attention / Faster R-CNN model (section 3.1 of the [paper](https://arxiv.org/abs/1707.07998)). The actual captioning model (section 3.2) is available in a separate repo [here](https://github.com/peteanderson80/Up-Down-Captioner).
 
 ### Reference
 If you use our code or features, please cite our paper:
@@ -34,7 +56,7 @@ bottom-up-attention is released under the MIT License (refer to the LICENSE file
 
 ### Pretrained features
 
-For ease-of-use, we make pretrained features available for the entire [MSCOCO dataset](http://mscoco.org/dataset/#download). It is not necessary to clone or build this repo to use features downloaded from the links below. Features are stored in tsv (tab-separated-values) format that can be read with `tools/read_tsv.py`. 
+For ease-of-use, we make pretrained features available for the entire [MSCOCO dataset](http://mscoco.org/dataset/#download). It is not necessary to clone or build this repo to use features downloaded from the links below. Features are stored in tsv (tab-separated-values) format that can be read with `tools/read_tsv.py`.
 
 **LINKS HAVE BEEN UPDATED**
 
@@ -65,7 +87,7 @@ gsutil -u [PROJECT_ID] cp gs://bottom-up-attention/test2014_36.zip [OBJECT_DESTI
 gsutil -u [PROJECT_ID] cp gs://bottom-up-attention/test2015_36.zip [OBJECT_DESTINATION] # 2015 Testing Image Features (80K / 17GB)
 ```
 
-Both sets of features can be recreated by using `tools/genenerate_tsv.py` with the appropriate pretrained model and with MIN_BOXES/MAX_BOXES set to either 10/100 or 36/36 respectively - refer [Demo](#demo). 
+Both sets of features can be recreated by using `tools/genenerate_tsv.py` with the appropriate pretrained model and with MIN_BOXES/MAX_BOXES set to either 10/100 or 36/36 respectively - refer [Demo](#demo).
 
 ### Contents
 1. [Requirements: software](#requirements-software)
@@ -123,11 +145,11 @@ Any NVIDIA GPU with 12GB or larger memory is OK for training Faster R-CNN ResNet
 ### Demo
 
 1.  Download [pretrained model](https://www.dropbox.com/s/wqada4qiv1dz9dk/resnet101_faster_rcnn_final.caffemodel?dl=1), and put it under `data\faster_rcnn_models`.
-   
+
 2.  Run `tools/demo.ipynb` to show object and attribute detections on demo images.
 
 3.  Run `tools/genenerate_tsv.py` to extract bounding box features to a tab-separated-values (tsv) file. This will require modifying the `load_image_ids` function to suit your data locations. To recreate the pretrained feature files with 10 to 100 features per image, set MIN_BOXES=10 and MAX_BOXES=100. To recreate the pretrained feature files with 36 features per image, set MIN_BOXES=36 and MAX_BOXES=36 use this [alternative pretrained model](https://www.dropbox.com/s/nu6jwhc88ujbw1v/resnet101_faster_rcnn_final_iter_320000.caffemodel?dl=1) instead. The alternative pretrained model was trained for fewer iterations but performance is similar.
-  
+
 
 ### Training
 
@@ -138,19 +160,19 @@ Any NVIDIA GPU with 12GB or larger memory is OK for training Faster R-CNN ResNet
     ```Shell
     cd $REPO_ROOT/data
     ln -s $VGdata vg
-    ``` 
+    ```
 
 3. Generate xml files for each image in the pascal voc format (this will take some time). This script will extract the top 2500/1000/500 objects/attributes/relations and also does basic cleanup of the visual genome data. Note however, that our training code actually only uses a subset of the annotations in the xml files, i.e., only 1600 object classes and 400 attribute classes, based on the hand-filtered vocabs found in `data/genome/1600-400-20`. The relevant part of the codebase is `lib/datasets/vg.py`. Relation labels can be included in the data layers but are currently not used.
 
     ```Shell
     cd $REPO_ROOT
     ./data/genome/setup_vg.py
-    ``` 
+    ```
 
 4.  Please download the ImageNet-pre-trained ResNet-100 model manually, and put it into `$REPO_ROOT/data/imagenet_models`
 
-5.  You can train your own model using `./experiments/scripts/faster_rcnn_end2end_multi_gpu_resnet_final.sh` (see instructions in file). The train (95k) / val (5k) / test (5k) splits are in `data/genome/{split}.txt` and have been determined using `data/genome/create_splits.py`. To avoid val / test set contamination when pre-training for MSCOCO tasks, for images in both datasets these splits match the 'Karpathy' COCO splits. 
-  
+5.  You can train your own model using `./experiments/scripts/faster_rcnn_end2end_multi_gpu_resnet_final.sh` (see instructions in file). The train (95k) / val (5k) / test (5k) splits are in `data/genome/{split}.txt` and have been determined using `data/genome/create_splits.py`. To avoid val / test set contamination when pre-training for MSCOCO tasks, for images in both datasets these splits match the 'Karpathy' COCO splits.
+
 
     Trained Faster-RCNN snapshots are saved under:
 
@@ -166,7 +188,7 @@ Any NVIDIA GPU with 12GB or larger memory is OK for training Faster R-CNN ResNet
 
 6.  Run `tools/review_training.ipynb` to visualize the training data and predictions.
 
-### Testing 
+### Testing
 
 1.  The model will be tested on the validation set at the end of training, or models can be tested directly using `tools/test_net.py`, e.g.:
 
@@ -187,6 +209,4 @@ Any NVIDIA GPU with 12GB or larger memory is OK for training Faster R-CNN ResNet
 |Faster R-CNN, ResNet-101 | 10.2%  | 15.1% | 7.8%  | 27.8% |
 
 
-Note that mAP is relatively low because many classes overlap (e.g. person / man / guy), some classes can't be precisely located (e.g. street, field) and separate classes exist for singular and plural objects (e.g. person / people). We focus on performance in downstream tasks (e.g. image captioning, VQA) rather than detection performance. 
-
-
+Note that mAP is relatively low because many classes overlap (e.g. person / man / guy), some classes can't be precisely located (e.g. street, field) and separate classes exist for singular and plural objects (e.g. person / people). We focus on performance in downstream tasks (e.g. image captioning, VQA) rather than detection performance.
