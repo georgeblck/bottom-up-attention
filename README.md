@@ -1,18 +1,20 @@
-# bottom-up-attention
+### Note on this Fork
 
-Updated to run on docker with CUDA 10.1, cuDNN7 and Ubuntu 16.04
+Updated to run on docker with CUDA 10.1, cuDNN7 and Ubuntu 16.04. Install and sample usage:
 
-``` bash    
-    docker build -f Dockerfile -t bottomUp .
-
-    docker run --runtime=nvidia -v /home/nikolai/Documents/art_data/gg:/workspace/images:ro -v /home/nikolai/Documents/data:/workspace/features --detach-keys 'ctrl-k' -it bottomUp bash
+``` bash
+git clone https://github.com/georgeblck/bottom-up-attention.git
+cd bottom-up-attention
+docker build -f Dockerfile -t bottomUp .
+docker run --runtime=nvidia -v /path/to/data/gg:/workspace/images:ro -v /path/to/features/data:/workspace/features -it bottomUp bash
 ```
 
+#### Some interesting links for other ports
 
-* [Important Link](https://github.com/BVLC/caffe/wiki/Ubuntu-16.04-or-15.10-Installation-Guide)
+* [Old Installation guide](https://github.com/BVLC/caffe/wiki/Ubuntu-16.04-or-15.10-Installation-Guide)
 * [cudnn File Switch](https://github.com/BVLC/caffe/issues/5793)
 * [Leave opencv3 out](https://github.com/BVLC/caffe/issues/4942)
-* [Leav opencv3 out](https://github.com/BVLC/caffe/issues/1276)
+* [Leave opencv3 out](https://github.com/BVLC/caffe/issues/1276)
 * [With Py3](https://mc.ai/installing-caffe-on-ubuntu-18-04-with-cuda-and-cudnn/)
 * [List of CUDA Arch](https://arnon.dk/matching-sm-architectures-arch-and-gencode-for-various-nvidia-cards/)
 * [Docker Hub Airsplay](https://hub.docker.com/r/airsplay/bottom-up-attention)
@@ -21,6 +23,7 @@ Updated to run on docker with CUDA 10.1, cuDNN7 and Ubuntu 16.04
 * [Arch Discussion](https://github.com/rbgirshick/py-faster-rcnn/issues/2)
 * [Where to look for Numpy Paths](https://github.com/BVLC/caffe/issues/4537)
 
+# bottom-up-attention
 
 This code implements a bottom-up attention model, based on multi-gpu training of Faster R-CNN with ResNet-101, using object and attribute annotations from [Visual Genome](http://visualgenome.org/).
 
